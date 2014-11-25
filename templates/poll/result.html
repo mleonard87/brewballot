@@ -22,7 +22,7 @@
   </div>
 
   <script type="text/javascript">
-    var total_votes = {{ total_votes }};
+    var max_votes = $('.winner').attr('data-vote-count');
     var scale_factor = (($(window).height() - 140) / $('.beer').height());
 
     var height = $('.beer').height();
@@ -38,13 +38,12 @@
     $('.beer-image-container').height(new_height);
     $('.beer-image-container').width(width * scale_factor);
 
+    var unit_height = new_height / max_votes;
+
     $('.result').each(function() {
-      var vote_count = $(this).attr('data-vote-count');
-      var vote_pct = (vote_count / total_votes);
 
-      var top = new_height - (new_height * vote_pct);
-
-      $(this).find('.beer').css('top', top);
+      var count_from_max = max_votes - $(this).attr('data-vote-count');
+      $(this).find('.beer').css('top', count_from_max);    
 
     });
 
