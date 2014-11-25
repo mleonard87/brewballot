@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+  <div class="header">
+    <h1>{% block title %}{{ poll.long_title }}{% endblock %}</h1>
+  </div>
+
+  <div class="results-container">
+    {% for po in poll_options %}
+      <div class="result{% if forloop.first %} winner{% endif %}" data-poll-option-title="{{ po.title }}" data-vote-count="{{ po.vote_count }}">
+        <div class="beer-image-container">
+          <img class="beer" src="{% static 'img/beer.png' %}" width="343" height="852" />
+          <img class="beer-glass" src="{% static 'img/beer_glass.png' %}" width="343" height="852" />
+        </div>
+        <div class="info">
+          <span class="poll-option-title">{{ po.title }}</span>
+          <span class="poll-vote-count">{{ po.vote_count }}</span>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <script type="text/javascript">
+    var total_votes = {{ total_votes }};
+    var scale_factor = (($(window).height() - 140) / $('.beer').height());
+
+    var height = $('.beer').height();
+    var width = $('.beer').width();
+
+    var new_height = height * scale_factor;
+    var new_width = width * scale_factor;
+
+    $('.beer').height(new_height);
+    $('.beer').width(width * scale_factor);
+    $('.beer-glass').height(new_height);
+    $('.beer-glass').width(width * scale_factor);
+    $('.beer-image-container').height(new_height);
+    $('.beer-image-container').width(width * scale_factor);
+
+    $('.result').each(function() {
+      var vote_count = $(this).attr('data-vote-count');
+      var vote_pct = (vote_count / total_votes);
+
+      var top = new_height - (new_height * vote_pct);
+
+      $(this).find('.beer').css('top', top);
+
+    });
+
+  </script>
+
+ {% endblock %}
