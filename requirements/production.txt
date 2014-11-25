@@ -3,3 +3,6 @@
 -r base.txt
 django-debug-toolbar==1.2.1
 dj-static==0.0.6
+dj-database-url==0.3.0
+static==0.4
+wsgiref==0.1.2
