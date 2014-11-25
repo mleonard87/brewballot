@@ -32,16 +32,4 @@ CACHES = {
 ########## END CACHE CONFIGURATION
 
 
-########## TOOLBAR CONFIGURATION
-# See: http://django-debug-toolbar.readthedocs.org/en/latest/installation.html#explicit-setup
-MIDDLEWARE_CLASSES += (
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
-)
-
-DEBUG_TOOLBAR_PATCH_SETTINGS = False
-
-# http://django-debug-toolbar.readthedocs.org/en/latest/installation.html
-INTERNAL_IPS = ('127.0.0.1',)
-########## END TOOLBAR CONFIGURATION
-
 SECRET_KEY = r'opqkkwb62=*!tu(3we-hx_s0_dlhcyp!0r_6ks+z6=q%k4wu(='
