@@ -33,3 +33,6 @@ CACHES = {
 
 
 SECRET_KEY = r'opqkkwb62=*!tu(3we-hx_s0_dlhcyp!0r_6ks+z6=q%k4wu(='
+
+# Allow all host headers
+ALLOWED_HOSTS = ['*']
