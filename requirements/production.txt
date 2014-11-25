@@ -2,3 +2,4 @@
 #	production that isn't in development.
 -r base.txt
 django-debug-toolbar==1.2.1
+dj-static==0.0.6

@@ -36,3 +36,10 @@ SECRET_KEY = r'opqkkwb62=*!tu(3we-hx_s0_dlhcyp!0r_6ks+z6=q%k4wu(='
 
 # Allow all host headers
 ALLOWED_HOSTS = ['*']
+
+# Parse database configuration from $DATABASE_URL
+import dj_database_url
+DATABASES['default'] =  dj_database_url.config()
+
+# Honor the 'X-Forwarded-Proto' header for request.is_secure()
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
