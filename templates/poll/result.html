@@ -43,7 +43,7 @@
     $('.result').each(function() {
 
       var count_from_max = max_votes - $(this).attr('data-vote-count');
-      $(this).find('.beer').css('top', count_from_max);    
+      $(this).find('.beer').css('top', count_from_max * unit_height);    
 
     });
 
