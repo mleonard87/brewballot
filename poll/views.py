@@ -51,8 +51,8 @@ def poll_refresh(request, poll_id, poll_slug):
 def sms_inbound(request):
     r = Response()
 
-    body = request.GET.get('Body')
-    sender = request.GET.get('From')
+    body = request.GET.get('Body', '')
+    sender = request.GET.get('From', '')
 
     if body.lower() == 'help':
         r.message(poll.long_title)
