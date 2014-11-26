@@ -9,6 +9,8 @@ from poll.models import Poll, PollOption, Vote
 from django_twilio.decorators import twilio_view
 from twilio.twiml import Response
 
+import json
+
 def poll_default(request):
     try:
         poll = Poll.objects.get(is_active=True)
@@ -33,6 +35,17 @@ def poll_results(request, poll_id, poll_slug):
             }
             )
         )
+
+def poll_refresh(request, poll_id, poll_slug):
+    poll = get_object_or_404(Poll, pk=poll_id)
+
+    poll_options = PollOption.objects.select_related().filter(poll=poll).annotate(vote_count=Count('vote')).order_by('-vote_count')
+
+    refresh_dict = {'max_votes': poll_options[0].vote_count}
+    for po in poll_options:
+        refresh_dict[po.title] = po.vote_count
+
+    return HttpResponse(json.dumps(refresh_dict), content_type='application/json')
 
 @twilio_view
 def sms_inbound(request):

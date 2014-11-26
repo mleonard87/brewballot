@@ -22,7 +22,23 @@
   </div>
 
   <script type="text/javascript">
-    var max_votes = $('.winner').attr('data-vote-count');
+    var unit_height;
+
+    function render_results(votes) {
+      // console.log(votes);
+      $('.result').each(function() {
+        var max_votes = votes.max_votes;
+        var vote_title = $(this).attr('data-poll-option-title');
+        var vote_count = votes[vote_title];
+
+        var count_from_max = max_votes - vote_count;
+        // console.log('Vote Title: ' + vote_title + ', Vote Count: ' + vote_count + ', count_from_max: ' + count_from_max + ', unit_height: ' + unit_height);
+        $(this).find('.beer').css('top', count_from_max * unit_height);
+        $(this).find('.poll-vote-count').text(vote_count);
+      });
+    } 
+
+    var max_votes = parseInt($('.winner').attr('data-vote-count'));
     var scale_factor = (($(window).height() - 140) / $('.beer').height());
 
     var height = $('.beer').height();
@@ -38,14 +54,23 @@
     $('.beer-image-container').height(new_height);
     $('.beer-image-container').width(width * scale_factor);
 
-    var unit_height = new_height / max_votes;
+    unit_height = new_height / max_votes;
 
+    var votes = {'max_votes': max_votes};
     $('.result').each(function() {
+        var vote_title = $(this).attr('data-poll-option-title');
+        votes[vote_title] = parseInt($(this).attr('data-vote-count'));
+      });
 
-      var count_from_max = max_votes - $(this).attr('data-vote-count');
-      $(this).find('.beer').css('top', count_from_max * unit_height);    
+    render_results(votes);
 
-    });
+    function update_display() {
+      $.get('{% url 'poll_refresh' poll.pk poll.slug %}', function(data) {
+        render_results(data);
+      });
+    }
+
+    setInterval(update_display, 1000);
 
   </script>
 
