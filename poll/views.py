@@ -98,5 +98,5 @@ def sms_inbound(request):
         r.message('You must be drunk, there are no open polls!')
         return r
 
-
-    
+    r.message('What happened?!')
+    return r
