@@ -57,14 +57,31 @@ html {
   color: #FFD966;
 }
 
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
 h1 {
-  font-size: 2em;
-  margin-top: 5px;
+  font-size: 3.5em;
+  margin-top: 20px;
   margin-bottom: 5px;
+}
+
+h2 {
+  font-size: 2em;
+  color: #fff;
+}
+
+.results-container {
+  position: absolute;
+  display: inline-block;
+  left: 50%;
 }
 
 .result {
   display: inline-block;
+  margin: 0 15px 0 15px;
 }
 
 .beer-image-container {
@@ -98,11 +115,23 @@ h1 {
   margin-top: 10px;
 }
 
-.poll-vote-count {
-  display: block;
-  font-size: 4em;
+.poll-option-title {
+  font-size: 3em;
 }
 
-.result.winner .poll-vote-count {
-  text-shadow: 0px 0px 20px rgba(255, 255, 255, 1);
+.poll-vote-count {
+  display: block;
+  font-size: 4.5em;
+  color: #fff;
+}
+
+.score-change {
+  position: absolute;
+  left: 50%;
+  margin-left: -46px;
+  top: 20%;
+  font-size: 5em;
+  text-shadow: 0px 0px 20px #FF531A;
+  color: #fff;
+  display: none;
 }
