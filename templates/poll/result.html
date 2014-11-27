@@ -52,7 +52,8 @@
     function render_results(votes) {
       var new_vote_found = false;
       $('.result').each(function() {
-        var max_votes = votes.max_votes;
+        max_votes = votes.max_votes;
+        unit_height = (new_height - (new_height * 0.13)) / max_votes;
         var vote_title = $(this).attr('data-poll-option-title');
         var vote_count = votes[vote_title];
 
@@ -166,7 +167,7 @@
     $('.wench').width(wench_width * scale_factor);
     $('.wench').css('margin-left', -($('.wench').width() / 2));
 
-    unit_height = (new_height - (new_height * 0.15)) / max_votes;
+    unit_height = (new_height - (new_height * 0.13)) / max_votes;
 
     var votes = {'max_votes': max_votes};
     $('.result').each(function() {
