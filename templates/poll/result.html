@@ -166,7 +166,7 @@
     $('.wench').width(wench_width * scale_factor);
     $('.wench').css('margin-left', -($('.wench').width() / 2));
 
-    unit_height = new_height / max_votes;
+    unit_height = (new_height - (new_height * 0.15)) / max_votes;
 
     var votes = {'max_votes': max_votes};
     $('.result').each(function() {
