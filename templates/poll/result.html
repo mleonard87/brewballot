@@ -29,6 +29,19 @@
   <script type="text/javascript">
     var unit_height;
 
+    var happy_little_boozer_audio = new Audio('{% static 'audio/happy_little_boozer.ogg' %}');
+    happy_little_boozer_audio.load();
+    happy_little_boozer_audio.addEventListener("ended", function() {
+      $('.wench').hide();         
+      happy_little_boozer_audio.src = '{% static 'audio/happy_little_boozer.ogg' %}';
+    });
+
+    var mmm_beer_audio = new Audio('{% static 'audio/mmm_beer.ogg' %}');
+    mmm_beer_audio.load();
+    mmm_beer_audio.addEventListener("ended", function() {       
+      mmm_beer_audio.src = '{% static 'audio/mmm_beer.ogg' %}';
+    });
+
     var score_timeouts = {};
     var max_votes = {{ max_vote }};
     var current_winning_vote = max_votes;
@@ -73,8 +86,7 @@
       });
 
       if (new_vote_found) {
-        var audio = new Audio('{% static 'audio/mmm_beer.ogg' %}');
-        audio.play();
+        mmm_beer_audio.play();
         new_vote_found = false;
 
         clearTimeout(winner_timeout);
@@ -119,12 +131,8 @@
       if (winner_changed) {
         $('.wench').hide();
 
-        var audio = new Audio('{% static 'audio/happy_little_boozer.ogg' %}');
-        audio.play();
-
-        audio.addEventListener("ended", function() {
-          $('.wench').hide();          
-        });
+        
+        happy_little_boozer_audio.play();
 
         for (var winner in new_winning_poll_options) {
           var winner_title = new_winning_poll_options[winner];
