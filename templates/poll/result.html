@@ -13,6 +13,9 @@
         <div class="beer-image-container">
           <img class="beer" src="{% static 'img/beer.png' %}" width="343" height="852" />
           <img class="beer-glass" src="{% static 'img/beer_glass.png' %}" width="343" height="852" />
+          <div class="score-change" data-current-vote-count="{{ po.vote_count }}">
+            +1
+          </div>
         </div>
         <div class="info">
           <span class="poll-option-title">{{ po.title }}</span>
@@ -25,22 +28,105 @@
   <script type="text/javascript">
     var unit_height;
 
+    var score_timeouts = {};
+    var max_votes = {{ max_vote }};
+    var current_winning_vote = max_votes;
+    var current_winning_poll_options = [];
+
+    var winner_timeout;
+
     function render_results(votes) {
-      // console.log(votes);
+      var new_vote_found = false;
       $('.result').each(function() {
         var max_votes = votes.max_votes;
         var vote_title = $(this).attr('data-poll-option-title');
         var vote_count = votes[vote_title];
 
         var count_from_max = max_votes - vote_count;
-        // console.log('Vote Title: ' + vote_title + ', Vote Count: ' + vote_count + ', count_from_max: ' + count_from_max + ', unit_height: ' + unit_height);
         $(this).find('.beer').css('top', count_from_max * unit_height);
         $(this).find('.poll-vote-count').text(vote_count);
+
+        var score_change_el = $(this).find('.score-change');
+        var current_vote_count = parseInt(score_change_el.attr('data-current-vote-count'));
+
+        if (current_vote_count !== vote_count) {
+          new_vote_found = true;
+          if (current_vote_count > vote_count) {
+            score_change_el.text('-' + (current_vote_count - vote_count));
+          } else {
+            score_change_el.text('+' + (vote_count - current_vote_count));
+          }
+          score_change_el.attr('data-current-vote-count', vote_count)
+          score_change_el.fadeIn(1000);
+
+          if (score_timeouts[vote_title]) {
+            clearTimeout(score_timeouts[vote_title]);
+          }
+
+          score_timeouts[vote_title] = setTimeout(function() {
+            fade_out_element(score_change_el);
+          }, 10000)
+        }
+
+        $('.results-container').css('margin-left', -($('.results-container').width() / 2));
       });
+
+      if (new_vote_found) {
+        var audio = new Audio('{% static 'audio/mmm_beer.ogg' %}');
+        audio.play();
+        new_vote_found = false;
+
+        clearTimeout(winner_timeout);
+
+        winner_timeout = setTimeout(function() {
+          check_for_winner_change(votes);
+        }, 2700);
+      }
     } 
 
-    var max_votes = parseInt($('.winner').attr('data-vote-count'));
-    var scale_factor = (($(window).height() - 140) / $('.beer').height());
+    function fade_out_element(element) {
+      element.fadeOut(1000);
+    }
+
+    function initialize_winners(votes) {
+      delete votes.max_votes;
+
+      for (vote in votes) {
+        var vote_title = vote;
+        var vote_count = votes[vote];
+        if (vote_count == max_votes) {
+          current_winning_poll_options.push(vote_title);
+        }
+      }
+    }
+
+    function check_for_winner_change(votes) {
+      var new_winning_vote = votes.max_votes;
+      var new_winning_poll_options = [];
+      delete votes.max_votes;
+
+      console.log(votes);
+
+      for (vote in votes) {
+        var vote_title = vote;
+        var vote_count = votes[vote];
+        if (vote_count == new_winning_vote) {
+          new_winning_poll_options.push(vote_title);
+        }
+      }
+
+      var winner_changed = !($(new_winning_poll_options).not(current_winning_poll_options).length == 0 && $(current_winning_poll_options).not(new_winning_poll_options).length == 0)
+
+      if (winner_changed) {
+        var audio = new Audio('{% static 'audio/happy_little_boozer.ogg' %}');
+        audio.play();
+      }
+
+      current_winning_vote = new_winning_vote;
+      current_winning_poll_options = new_winning_poll_options;
+    }
+
+    var scale_factor = (($(window).height() - 270) / $('.beer').height());
 
     var height = $('.beer').height();
     var width = $('.beer').width();
@@ -59,11 +145,12 @@
 
     var votes = {'max_votes': max_votes};
     $('.result').each(function() {
-        var vote_title = $(this).attr('data-poll-option-title');
-        votes[vote_title] = parseInt($(this).attr('data-vote-count'));
-      });
+      var vote_title = $(this).attr('data-poll-option-title');
+      votes[vote_title] = parseInt($(this).attr('data-vote-count'));
+    });    
 
     render_results(votes);
+    initialize_winners(votes);
 
     function update_display() {
       $.get('{% url 'poll_refresh' poll.pk poll.slug %}', function(data) {

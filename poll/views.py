@@ -21,7 +21,9 @@ def poll_default(request):
 def poll_results(request, poll_id, poll_slug):
     poll = get_object_or_404(Poll, pk=poll_id)
 
-    poll_options = PollOption.objects.select_related().filter(poll=poll).annotate(vote_count=Count('vote')).order_by('-vote_count')
+    poll_options = PollOption.objects.select_related().filter(poll=poll).annotate(vote_count=Count('vote'))
+
+    max_vote = PollOption.objects.select_related().filter(poll=poll).annotate(vote_count=Count('vote')).order_by('-vote_count')[0].vote_count
 
     # total_votes = Vote.objects.filter(poll_option__poll=poll).count()
 
@@ -30,7 +32,7 @@ def poll_results(request, poll_id, poll_slug):
         context_instance=RequestContext(
             request,
             {
-                'poll': poll, 'poll_options': poll_options,
+                'poll': poll, 'poll_options': poll_options, 'max_vote': max_vote
                 # 'total_votes': total_votes
             }
             )
