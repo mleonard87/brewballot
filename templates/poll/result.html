@@ -26,14 +26,6 @@
     {% endfor %}
   </div>
 
-  <audio id="mmm_beer" src="{% static 'audio/mmm_beer.ogg' %}" preload="auto">
-    Your browser does not support the <code>audio</code> element.
-  </audio>
-
-  <audio id="happy_little_boozer" src="{% static 'audio/happy_little_boozer.ogg' %}" preload="auto">
-    Your browser does not support the <code>audio</code> element.
-  </audio>
-
   <script type="text/javascript">
     var unit_height;
 
@@ -81,7 +73,8 @@
       });
 
       if (new_vote_found) {
-        document.getElementById('mmm_beer').play();
+        var audio = new Audio('{% static 'audio/mmm_beer.ogg' %}');
+        audio.play();
         new_vote_found = false;
 
         clearTimeout(winner_timeout);
@@ -126,8 +119,10 @@
       if (winner_changed) {
         $('.wench').hide();
 
-        document.getElementById('happy_little_boozer').play();
-        document.getElementById('happy_little_boozer').addEventListener("ended", function() {
+        var audio = new Audio('{% static 'audio/happy_little_boozer.ogg' %}');
+        audio.play();
+
+        audio.addEventListener("ended", function() {
           $('.wench').hide();          
         });
 
