@@ -9,10 +9,11 @@
 
   <div class="results-container">
     {% for po in poll_options %}
-      <div class="result{% if forloop.first %} winner{% endif %}" data-poll-option-title="{{ po.title }}" data-vote-count="{{ po.vote_count }}">
+      <div class="result" data-poll-option-title="{{ po.title }}" data-vote-count="{{ po.vote_count }}">
         <div class="beer-image-container">
           <img class="beer" src="{% static 'img/beer.png' %}" width="343" height="852" />
           <img class="beer-glass" src="{% static 'img/beer_glass.png' %}" width="343" height="852" />
+          <img class="wench" src="{% static 'img/wench.png' %}" width="253" height="199" />
           <div class="score-change" data-current-vote-count="{{ po.vote_count }}">
             +1
           </div>
@@ -105,8 +106,6 @@
       var new_winning_poll_options = [];
       delete votes.max_votes;
 
-      console.log(votes);
-
       for (vote in votes) {
         var vote_title = vote;
         var vote_count = votes[vote];
@@ -118,8 +117,20 @@
       var winner_changed = !($(new_winning_poll_options).not(current_winning_poll_options).length == 0 && $(current_winning_poll_options).not(new_winning_poll_options).length == 0)
 
       if (winner_changed) {
+        $('.wench').hide();
+
         var audio = new Audio('{% static 'audio/happy_little_boozer.ogg' %}');
         audio.play();
+
+        audio.addEventListener("ended", function() {
+          $('.wench').hide();          
+        });
+
+        for (var winner in new_winning_poll_options) {
+          var winner_title = new_winning_poll_options[winner];
+
+          $('.result[data-poll-option-title="' + winner_title + '"]').find('.wench').show();
+        };
       }
 
       current_winning_vote = new_winning_vote;
@@ -135,11 +146,17 @@
     var new_width = width * scale_factor;
 
     $('.beer').height(new_height);
-    $('.beer').width(width * scale_factor);
+    $('.beer').width(new_width);
     $('.beer-glass').height(new_height);
-    $('.beer-glass').width(width * scale_factor);
+    $('.beer-glass').width(new_width);
     $('.beer-image-container').height(new_height);
-    $('.beer-image-container').width(width * scale_factor);
+    $('.beer-image-container').width(new_width);
+
+    var wench_height = $('.wench').height();
+    var wench_width = $('.wench').width();
+    $('.wench').height(wench_height * scale_factor);
+    $('.wench').width(wench_width * scale_factor);
+    $('.wench').css('margin-left', -($('.wench').width() / 2));
 
     unit_height = new_height / max_votes;
 
