@@ -6,7 +6,7 @@ from poll.models import Poll, PollOption, Vote
 
 class PollAdminForm(forms.ModelForm):
     def clean_is_active(self):
-        currently_active = Poll.objects.filter(is_active=True).count()
+        currently_active = Poll.objects.filter(is_active=True).exclude(pk=self.instance.id).count()
 
         is_active = self.cleaned_data['is_active']
 
