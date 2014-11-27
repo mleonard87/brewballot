@@ -3,6 +3,7 @@ from django.template import RequestContext
 from django.db.models import Count
 from django.http import HttpResponse
 from django.core.urlresolvers import reverse
+from django.conf import settings
 
 from poll.models import Poll, PollOption, Vote
 
@@ -32,8 +33,8 @@ def poll_results(request, poll_id, poll_slug):
         context_instance=RequestContext(
             request,
             {
-                'poll': poll, 'poll_options': poll_options, 'max_vote': max_vote
-                # 'total_votes': total_votes
+                'poll': poll, 'poll_options': poll_options,
+                'max_vote': max_vote, 'sms_number': settings.VOTE_SMS_NUMBER
             }
             )
         )
