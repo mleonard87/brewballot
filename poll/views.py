@@ -71,7 +71,7 @@ def sms_response_error(message):
 def sms_response_help(poll_title, poll_options):
     r = Response()
     r.message(
-        u"%s\nOptions: %s.\n\nReply to this SMS with your vote!\n\nTo see the results text RESULTS.\n\nTo remove a vote text UNVOTE. \U0001F37A" % (
+        u"%s\nOptions: %s.\n\nReply to this SMS with your vote!\n\nTo see the results text RESULTS.\n\nTo remove a vote text UNVOTE.\n\nTo see which option you have voted for text WHICH. \U0001F37A" % (
             poll_title, poll_options
             )
         )
@@ -130,7 +130,22 @@ def sms_inbound(request):
             except Vote.DoesNotExist:
                 return sms_response_error(
                     u"Clearly you're drunk - you can't unvote if you haven't even voted yet! \U0001F632"
-                    )           
+                    ) 
+
+        if body.lower() == 'which':
+            try:
+                vote = Vote.objects.get(
+                    poll_option__poll=poll, sender_number=sender
+                    )
+
+                return sms_response_success(
+                    u"Your voted for: %s \U0001F631" % vote.poll_option.title
+                    ) 
+
+            except Vote.DoesNotExist:
+                return sms_response_error(
+                    u"You've been too busy drinking, you haven't even voted yet! \U0001F632"
+                    ) 
 
         try:
             poll_option = PollOption.objects.get(poll=poll, title__iexact=body)

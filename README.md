@@ -47,4 +47,5 @@ SMS Options
 - POLLHELP - Get a response containing the currently active poll question and the list of possible answers.
 - RESULTS - Get a response containing the currently active poll question and each of the answers with their current scores.
 - UNVOTE - Remove your vote from the currently active poll if you have already voted.
+- WHICH - You will recieve a message back saying which option you have voted for.
 - Option (e.g. Mike) - The name of the one of the possible poll options to vote for that option. If you have already voted you vote will be changed - you cannot vote twice.
