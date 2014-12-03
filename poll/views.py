@@ -22,7 +22,7 @@ def poll_default(request):
 def poll_results(request, poll_id, poll_slug):
     poll = get_object_or_404(Poll, pk=poll_id)
 
-    poll_options = PollOption.objects.select_related().filter(poll=poll).annotate(vote_count=Count('vote'))
+    poll_options = PollOption.objects.select_related().filter(poll=poll).annotate(vote_count=Count('vote')).order_by('title')
 
     max_vote = PollOption.objects.select_related().filter(poll=poll).annotate(vote_count=Count('vote')).order_by('-vote_count')[0].vote_count
 
