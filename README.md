@@ -4,7 +4,7 @@ Brew Ballot
 A simple application that allows you to set up a poll with some possible answers and let people text (SMS) in their votes using Twilio.
 
 A web-based dashboard is also available to display the results as picture below.
-![Dashboard Screenshot](/static/images/screenshot.png?raw=true "Dashboard Screenshot")
+![Dashboard Screenshot](/../screenshots/dashboard.png?raw=true "Dashboard Screenshot")
 
 Setting Up
 ==========
@@ -21,7 +21,7 @@ Local Development
       "VOTE_SMS_NUMBER": ""
     }
 2. `./manage.py migrate` to migrate your database (sqlite by default in this case).
-3. `./manage.py runserver` and point your browser to http://localhost:8000
+3. `./manage.py runserver` and point your browser to http://localhost:8000 to view the dashboard.
 
 Heroku
 ------
@@ -31,4 +31,15 @@ Heroku
   - TWILIO_ACCOUNT_SID
   - TWILIO_AUTH_TOKEN
   - VOTE_SMS_NUMBER
-3. View your Heroku app in a browser.
+3. View your Heroku app in a browser to visit th dashboard.
+
+Configuration
+=============
+
+The configuration of the polls is carried out using Django admin at http://localhost:8000/admin
+
+SMS Options
+===========
+- POLLHELP - Get a response containing the currently active poll question and the list of possible answers.
+- RESULTS - Get a response containing the currently active poll question and each of the answers with their current scores.
+- Option - The name of the one of the possible poll options to vote for that option. If you have already voted you vote will be changed - you cannot vote twice.
