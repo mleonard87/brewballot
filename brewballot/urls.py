@@ -11,6 +11,8 @@ urlpatterns = patterns('',
 
     url(r'^poll/', include('poll.urls')),
 
+    url(r'^all/$', 'poll.views.poll_all', name='poll_all'),
+
     url(r'^admin/', include(admin.site.urls)),
 )
 

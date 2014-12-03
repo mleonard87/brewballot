@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+  <div class="header">
+    <h1>{% block title %}All Polls{% endblock %}</h1>
+  </div>
+
+  <ul class="polls-list">
+  {% for poll in polls %}
+    <li class="poll">
+      <a href="{% url 'poll_results' poll.pk poll.slug %}">{{ poll.long_title }}</a>{% if poll.is_active %}<span class="is-active"> - Active</span>{% endif %}
+      <span class="start-date">{{ poll.created_on }}</span>
+    </li>
+  {% endfor %}
+  </ul>
+
+ {% endblock %}

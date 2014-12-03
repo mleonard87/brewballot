@@ -17,7 +17,7 @@ def poll_default(request):
         poll = Poll.objects.get(is_active=True)
         return redirect(reverse('poll_results', args=[poll.pk, poll.slug]))
     except Poll.DoesNotExist:
-        return redirect('no_active_polls')   
+        return redirect('no_active_polls')
 
 def poll_results(request, poll_id, poll_slug):
     poll = get_object_or_404(Poll, pk=poll_id)
@@ -37,6 +37,14 @@ def poll_results(request, poll_id, poll_slug):
                 'max_vote': max_vote, 'sms_number': settings.VOTE_SMS_NUMBER
             }
             )
+        )
+
+def poll_all(request):
+    polls = Poll.objects.all().order_by('-created_on')
+
+    return render_to_response(
+        'poll/all.html',
+        context_instance=RequestContext(request, {'polls': polls,})
         )
 
 def poll_refresh(request, poll_id, poll_slug):

@@ -6,6 +6,10 @@ A simple application that allows you to set up a poll with some possible answers
 A web-based dashboard is also available to display the results as picture below.
 ![Dashboard Screenshot](/../screenshots/dashboard.png?raw=true "Dashboard Screenshot")
 
+The home page will take you to the dashboard for the currently active poll if there is one, otherwise it will display "No Active Polls".
+
+To view a list of all polls go to /all in the URL. (e.g. http://localhost:8000/all)
+
 Setting Up
 ==========
 
