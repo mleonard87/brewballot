@@ -63,7 +63,7 @@ def sms_response_error(message):
 def sms_response_help(poll_title, poll_options):
     r = Response()
     r.message(
-        u"%s\nOptions: %s.\n\nReply to this SMS with your vote!\n\nTo see the results text RESULTS. \U0001F37A" % (
+        u"%s\nOptions: %s.\n\nReply to this SMS with your vote!\n\nTo see the results text RESULTS.\n\nTo remove a vote text UNVOTE. \U0001F37A" % (
             poll_title, poll_options
             )
         )
@@ -101,6 +101,22 @@ def sms_inbound(request):
                 u"Results for: \"%s\"\n\n%s" % (poll.long_title, votes_text)
                 )
 
+        if body.lower() == 'unvote':
+            try:
+                vote = Vote.objects.get(
+                    poll_option__poll=poll, sender_number=sender
+                    )
+                vote.delete()
+
+                return sms_response_success(
+                    u"Your vote has been removed! \U0001F631"
+                    )
+
+            except Vote.DoesNotExist:
+                return sms_response_error(
+                    u"Clearly you're drunk - you can't unvote if you haven't even voted yet! \U0001F632"
+                    )           
+
         try:
             poll_option = PollOption.objects.get(poll=poll, title__iexact=body)
 
@@ -111,7 +127,7 @@ def sms_inbound(request):
 
                 if existing_vote.poll_option.title.lower() == body.lower():
                     return sms_response_error(
-                        "You've already voted for %s. You're drunk! \U0001F632" % body
+                        u"You've already voted for %s. You're drunk! \U0001F632" % body
                         )
                 else: 
                     existing_vote.poll_option = poll_option
