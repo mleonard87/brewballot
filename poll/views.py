@@ -69,15 +69,22 @@ def sms_response_help(poll_title, poll_options):
         )
     return r
 
+# TWilio uses some words as commands to subscribe/unsubscribe people from the 
+# service, if one of these comes through we will want to ignore it.
+# See here fore more info: https://www.twilio.com/help/faq/sms/does-twilio-support-stop-block-and-cancel-aka-sms-filtering
+twilio_reserved_words = [
+    'STOP', 'STOPALL', 'UNSUBSCRIBE', 'CANCEL', 'END', 'START', 'YES', 'HELP',
+    'INFO', 
+    ]
 
 @twilio_view
 def sms_inbound(request):
     body = request.POST.get('Body', '')
     sender = request.POST.get('From', '')
-
-    print body
-    print body.lower()
-    print request.POST
+    
+    # Ignore any bodies with Twilio commands.
+    if body.upper() in twilio_reserved_words:
+        return Response()
 
     try:
         poll = Poll.objects.get(is_active=True)
