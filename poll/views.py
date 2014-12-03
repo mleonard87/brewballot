@@ -139,7 +139,7 @@ def sms_inbound(request):
                     )
 
                 return sms_response_success(
-                    u"Your voted for: %s \U0001F37B" % vote.poll_option.title
+                    u"You voted for: %s \U0001F37B" % vote.poll_option.title
                     ) 
 
             except Vote.DoesNotExist:
