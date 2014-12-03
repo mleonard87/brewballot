@@ -50,23 +50,56 @@ def poll_refresh(request, poll_id, poll_slug):
 
     return HttpResponse(json.dumps(refresh_dict), content_type='application/json')
 
+def sms_response_success(message):
+    r = Response()
+    r.message(u"%s\n\nFor more information reply to this SMS with POLLHELP." % message)
+    return r
+
+def sms_response_error(message):
+    r = Response()
+    r.message(u"%s\n\nFor more information reply to this SMS with POLLHELP." % message)
+    return r
+
+def sms_response_help(poll_title, poll_options):
+    r = Response()
+    r.message(
+        u"%s\nOptions: %s.\n\nReply to this SMS with your vote!\n\nTo see the results text RESULTS. \U0001F37A" % (
+            poll_title, poll_options
+            )
+        )
+    return r
+
+
 @twilio_view
 def sms_inbound(request):
-    r = Response()
+    body = request.POST.get('Body', '')
+    sender = request.POST.get('From', '')
 
-    body = request.GET.get('Body', '')
-    sender = request.GET.get('From', '')
-
-    if body.lower() == 'help':
-        r.message(poll.long_title)
-        return r
-
-    if body.lower() == 'help':
-        r.message(poll.long_title)
-        return r
+    print body
+    print body.lower()
+    print request.POST
 
     try:
         poll = Poll.objects.get(is_active=True)
+
+        if body.lower() == 'pollhelp':
+
+            poll_options = ', '.join(
+                p.title for p in PollOption.objects.filter(poll=poll)
+                )
+
+            return sms_response_help(
+                poll_title=poll.long_title, poll_options=poll_options
+                )
+
+        if body.lower() == 'results' or body.lower() == 'result':
+            votes = PollOption.objects.select_related().filter(poll=poll).annotate(vote_count=Count('vote')).order_by('-vote_count')
+
+            votes_text = '\n'.join(v.title + ': ' + unicode(v.vote_count) for v in votes)
+
+            return sms_response_success(
+                u"Results for: \"%s\"\n\n%s" % (poll.long_title, votes_text)
+                )
 
         try:
             poll_option = PollOption.objects.get(poll=poll, title__iexact=body)
@@ -77,29 +110,37 @@ def sms_inbound(request):
                     )
 
                 if existing_vote.poll_option.title.lower() == body.lower():
-                    r.message("You've already voted for %s. You're drunk!" % body)
-                    return r
+                    return sms_response_error(
+                        "You've already voted for %s. You're drunk! \U0001F632" % body
+                        )
                 else: 
                     existing_vote.poll_option = poll_option
                     existing_vote.save()
-                    r.message(u'Your vote has been updated! Cheers. \U0001F37B')
-                    return r
+
+                    return sms_response_success(
+                        u"Your vote has been updated! Cheers. \U0001F37B"
+                        )
 
             except Vote.DoesNotExist:
                 vote = Vote()
                 vote.poll_option = poll_option
                 vote.sender_number = sender
                 vote.save()
-                r.message(u'Thanks for your vote! Cheers. \U0001F37B')
-                return r
+
+                return sms_response_success(
+                    u"Thanks for your vote! Cheers. \U0001F37B"
+                    )
 
         except PollOption.DoesNotExist:
-            r.message('How drunk are you? That option does not exist!')
-            return r
+            return sms_response_error(
+                u"How drunk are you? That option does not exist! \U0001F632"
+                )
 
     except Poll.DoesNotExist:
-        r.message('You must be drunk, there are no open polls!')
-        return r
+        return sms_response_error(
+            u"You must be drunk, there are no open polls! \U0001F632"
+            )
 
-    r.message('What happened?!')
-    return r
+    return sms_response_error(
+        u"What happened?! \U0001F632"
+        )
